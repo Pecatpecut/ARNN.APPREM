@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 class AppConstants {
   /// APP
   static const String appName = "Aetheric Flux";
@@ -9,8 +10,8 @@ class AppConstants {
   static const double radius = 16.0;
 
   /// API
-  static const String supabaseUrl = "YOUR_URL";
-  static const String supabaseAnonKey = "YOUR_KEY";
+  static String get supabaseUrl => dotenv.env['SUPABASE_URL']!;
+  static String get supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY']!;
 
   /// DEFAULT IMAGE
   static const String defaultImage =

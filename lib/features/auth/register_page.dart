@@ -2,13 +2,53 @@ import 'package:flutter/material.dart';
 import '../../core/constants.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme_provider.dart';
+import '../../services/auth_service.dart';
 
-class RegisterPage extends StatelessWidget {
+class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
   @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _isLoading = false;
+
+  final _authService = AuthService();
+
+  Future<void> _register() async {
+    setState(() => _isLoading = true);
+
+    try {
+      await _authService.register(
+        name: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+        phone: _phoneController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Akun berhasil dibuat!')),
+      );
+
+      Navigator.pop(context); // balik ke login
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Register gagal: ${e.toString()}')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context); ///nanti dl ya
 
     return Scaffold(
       body: Container(
@@ -117,17 +157,22 @@ class RegisterPage extends StatelessWidget {
                   child: Column(
                     children: [
 
-                      _input("Full Name"),
+                      _input("Full Name", controller: _nameController),
                       const SizedBox(height: 16),
 
-                      _input("Email"),
+                      _input("Email", controller: _emailController),
                       const SizedBox(height: 16),
 
-                      _input("Password", isPassword: true),
+                      _input("No. WhatsApp", controller: _phoneController),
+                      const SizedBox(height: 16),
+                      
+                      _input("Password", controller: _passwordController, isPassword: true),
 
                       const SizedBox(height: 20),
 
-                      _button(context),
+                      _isLoading
+                          ? const CircularProgressIndicator()
+                          : _button(),
                     ],
                   ),
                 ),
@@ -159,8 +204,9 @@ class RegisterPage extends StatelessWidget {
     );
   }
 
-  Widget _input(String hint, {bool isPassword = false}) {
+  Widget _input(String hint, {bool isPassword = false, required TextEditingController controller}) {
     return TextField(
+      controller: controller,
       obscureText: isPassword,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
@@ -176,11 +222,9 @@ class RegisterPage extends StatelessWidget {
     );
   }
 
-  Widget _button(BuildContext context) {
+  Widget _button() {
     return GestureDetector(
-      onTap: () {
-        Navigator.pop(context); // balik ke login
-      },
+      onTap: _register,
       child: Container(
         height: 55,
         decoration: BoxDecoration(

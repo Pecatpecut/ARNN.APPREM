@@ -1,8 +1,46 @@
 import 'package:flutter/material.dart';
 import '../../core/constants.dart';
+import '../../services/auth_service.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _isLoading = false;
+
+  final _authService = AuthService();
+
+  Future<void> _login() async {
+    setState(() => _isLoading = true);
+
+    try {
+      final role = await _authService.login(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      if (!mounted) return;
+
+      // Redirect sesuai role
+      if (role == 'admin') {
+        Navigator.pushReplacementNamed(context, '/admin');
+      } else {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login gagal: ${e.toString()}')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,13 +132,15 @@ class LoginPage extends StatelessWidget {
                   child: Column(
                     children: [
 
-                      _input("Email"),
+                      _input("Email", controller: _emailController),
                       const SizedBox(height: 16),
-                      _input("Password", isPassword: true),
+                      _input("Password", controller: _passwordController, isPassword: true),
 
                       const SizedBox(height: 20),
 
-                      _button(context),
+                      _isLoading
+                          ? const CircularProgressIndicator()
+                      : _button(),
                     ],
                   ),
                 ),
@@ -132,8 +172,9 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  Widget _input(String hint, {bool isPassword = false}) {
+  Widget _input(String hint, {bool isPassword = false, required TextEditingController controller}) {
     return TextField(
+      controller: controller,
       obscureText: isPassword,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
@@ -149,11 +190,9 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  Widget _button(BuildContext context) {
+  Widget _button() {
     return GestureDetector(
-      onTap: () {
-        Navigator.pushReplacementNamed(context, '/home');
-      },
+      onTap: _login,
       child: Container(
         height: 55,
         decoration: BoxDecoration(
