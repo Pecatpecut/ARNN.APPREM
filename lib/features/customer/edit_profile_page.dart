@@ -62,7 +62,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       if (passwordController.text.isNotEmpty) {
         await supabase.auth.updateUser(
-          UserAttributes(email: emailController.text.trim()),
+          UserAttributes(password: passwordController.text.trim()),
         );
       }
 

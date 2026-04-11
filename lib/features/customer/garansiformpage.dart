@@ -35,9 +35,12 @@ class _GaransiFormPageState extends State<GaransiFormPage> {
     final picked = await picker.pickImage(source: ImageSource.gallery);
 
     if (picked != null) {
-      imageBytes = await picked.readAsBytes();
-      setState(() {});
-    }
+    final bytes = await picked.readAsBytes();
+    setState(() {
+      pickedFile = picked; // ← tambah ini
+      imageBytes = bytes;
+    });
+  }
   }
 
   @override
@@ -92,20 +95,44 @@ class _GaransiFormPageState extends State<GaransiFormPage> {
               final user = supabase.auth.currentUser;
               if (user == null) return;
 
+              final ctx = context;
+
+              try {
+                String? imageUrl;
+                if (imageBytes != null && pickedFile != null) {
+                  final fileName = '${user.id}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+                  
+                  await supabase.storage
+                      .from('claim-proofs')
+                      .uploadBinary(fileName, imageBytes!);
+
+                  imageUrl = supabase.storage
+                      .from('claim-proofs')
+                      .getPublicUrl(fileName);
+                }
+
               await service.createClaim(
                 orderId: order['id'],
                 userId: user.id,
                 description:
                     "$selectedReason - ${descriptionController.text}",
+                imageUrl: imageUrl,    
               );
 
               if (!mounted) return;
+              Navigator.pop(ctx);
 
-              Navigator.pop(context); // balik ke list
-            },
-          ),
+            } catch (e) {
+              print("ERROR: $e");
+              if (!mounted) return;
+              ScaffoldMessenger.of(ctx).showSnackBar(
+                SnackBar(content: Text("Gagal submit: $e")),
+              );
+            }
+            }
+          )
         ],
-      ),
+      )
     );
   }
 }

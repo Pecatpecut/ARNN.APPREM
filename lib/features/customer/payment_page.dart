@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/constants.dart';
 
@@ -20,9 +22,12 @@ class PaymentPage extends StatefulWidget {
 class _PaymentPageState extends State<PaymentPage> {
   Duration timeLeft = const Duration(hours: 23, minutes: 59, seconds: 59);
   Timer? timer;
-  bool uploaded = false;
+
+  XFile? pickedFile;
+  Uint8List? imageBytes;
 
   final orderService = OrderService();
+  final supabase = Supabase.instance.client;
 
   @override
   void initState() {
@@ -43,6 +48,32 @@ class _PaymentPageState extends State<PaymentPage> {
   String formatTime(Duration d) {
     String twoDigits(int n) => n.toString().padLeft(2, "0");
     return "${twoDigits(d.inHours)}:${twoDigits(d.inMinutes % 60)}:${twoDigits(d.inSeconds % 60)}";
+  }
+
+  Future<void> pickImage() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      final bytes = await picked.readAsBytes();
+      setState(() {
+        pickedFile = picked;
+        imageBytes = bytes;
+      });
+    }
+  }
+
+  Future<String?> uploadPaymentProof(String userId) async {
+    if (pickedFile == null || imageBytes == null) return null;
+
+    final fileName = '${userId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+    await supabase.storage
+        .from('payment-proofs')
+        .uploadBinary(fileName, imageBytes!);
+
+    return supabase.storage
+        .from('payment-proofs')
+        .getPublicUrl(fileName);
   }
 
   @override
@@ -92,10 +123,8 @@ class _PaymentPageState extends State<PaymentPage> {
           ),
         ),
 
-
         child: Padding(
           padding: const EdgeInsets.all(AppConstants.padding),
-          
           
           child: ListView(
             children: [
@@ -107,7 +136,7 @@ class _PaymentPageState extends State<PaymentPage> {
                   _StepItem("3", "Confirm", false),
                 ],
               ),
-
+              Space.h20,
               /// 🔥 TIMER
               Column(
                 children: [
@@ -201,11 +230,7 @@ class _PaymentPageState extends State<PaymentPage> {
 
               /// 🔥 UPLOAD
               GestureDetector(
-                onTap: () {
-                  setState(() {
-                    uploaded = true;
-                  });
-                },
+                onTap: pickImage,
                 child: Container(
                   height: 120,
                   decoration: BoxDecoration(
@@ -213,13 +238,13 @@ class _PaymentPageState extends State<PaymentPage> {
                         BorderRadius.circular(AppConstants.radius),
                     border: Border.all(color: Colors.grey),
                   ),
-                  child: Center(
-                    child: Text(
-                      uploaded
-                          ? "✔ Uploaded successfully"
-                          : "Upload Proof of Payment",
-                    ),
-                  ),
+                    child: imageBytes != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(AppConstants.radius),
+                          child: Image.memory(imageBytes!, fit: BoxFit.cover, width: double.infinity),
+                        )
+                      : const Center(child: Text("Upload Proof of Payment")
+                      ),
                 ),
               ),
 
@@ -228,38 +253,52 @@ class _PaymentPageState extends State<PaymentPage> {
               /// 🔥 BUTTON (INI YANG PENTING)
               PrimaryButton(
                 text: "Confirm Payment",
-                          onTap: () async {
-                    final user = Supabase.instance.client.auth.currentUser;
+                onTap: () async {
+                  final user = Supabase.instance.client.auth.currentUser;
 
-                    if (user == null) return;
+                  if (user == null) return;
 
-                   await orderService.createOrder(
+                  final ctx = context;
+
+                  try {
+                    // Upload bukti bayar dulu
+                    final paymentProofUrl = await uploadPaymentProof(user.id);
+
+                    await orderService.createOrder(
                       userId: user.id,
                       product: product,
                       variant: variant,
                       email: email,
+                      paymentProof: paymentProofUrl,
                     );
 
                     if (!mounted) return; // 🔥 WAJIB
 
                     showDialog(
-                      context: context,
+                      context: ctx,
                       builder: (_) => AlertDialog(
                         title: const Text("Success"),
                         content: const Text("Pesanan berhasil dibuat"),
                         actions: [
                           TextButton(
                             onPressed: () {
-                              Navigator.pop(context);
-                              Navigator.pushNamed(context, '/orders');
+                              Navigator.pop(ctx);
+                              Navigator.pushNamed(ctx, '/orders');
                             },
                             child: const Text("OK"),
                           )
                         ],
                       ),
                     );
-                  },
-              ),
+
+                  } catch (e) {
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(ctx).showSnackBar(
+                      SnackBar(content: Text("Gagal: $e")),
+                    );
+                  }
+                },
+              ),  
 
               Space.h20,
             ],
@@ -286,7 +325,7 @@ class _PaymentPageState extends State<PaymentPage> {
       ),
     );
   }
-}
+}  
 
 class _StepItem extends StatelessWidget {
   final String number;

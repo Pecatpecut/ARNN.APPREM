@@ -128,6 +128,8 @@ class _AdminOrderDetailPageState
 
   /// 🔥 APPROVE DIALOG
   void _approveDialog(BuildContext context, Map data) {
+    print("STATUS: ${data['status']}"); // ← tambah ini
+    print("DATA: $data");
     final emailController = TextEditingController();
     final passController = TextEditingController();
 

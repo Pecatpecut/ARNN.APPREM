@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants.dart';
 
@@ -7,8 +8,49 @@ import '../../widgets/shared/spacing.dart';
 import '../../widgets/shared/status_badge.dart';
 import '../../widgets/buttons/primary_button.dart';
 
-class OrderDetailPage extends StatelessWidget {
+class OrderDetailPage extends StatefulWidget {
   const OrderDetailPage({super.key});
+
+  @override
+  State<OrderDetailPage> createState() => _OrderDetailPageState();
+}
+
+class _OrderDetailPageState extends State<OrderDetailPage> {
+  final supabase = Supabase.instance.client;
+
+  Map? subscription;
+  bool isLoadingSubs = true;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final data = ModalRoute.of(context)?.settings.arguments as Map?;
+    if (data != null) fetchSubscription(data['id']);
+  }
+
+  Future<void> fetchSubscription(String orderId) async {
+    try {
+      final data = await supabase
+          .from('subscriptions')
+          .select()
+          .eq('order_id', orderId)
+          .maybeSingle();
+
+      setState(() {
+        subscription = data;
+        isLoadingSubs = false;
+      });
+    } catch (e) {
+      setState(() => isLoadingSubs = false);
+    }
+  }
+
+  String _formatDate(String? raw) {
+    if (raw == null) return '-';
+    final date = DateTime.tryParse(raw);
+    if (date == null) return '-';
+    return "${date.day}/${date.month}/${date.year}";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,12 +71,9 @@ class OrderDetailPage extends StatelessWidget {
     final price = data["price"] ?? 0;
     final status = data["status"] ?? "pending";
     final date = data["created_at"] ?? "-";
-
     final email = data["account_email"] ?? "-";
     final password = data["account_password"] ?? "-";
-
-    final imageUrl =
-        data['products'] != null ? data['products']['image'] : null;
+    final imageUrl = data['products'] != null ? data['products']['image'] : null;
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
@@ -172,6 +211,39 @@ class OrderDetailPage extends StatelessWidget {
 
             Space.h20,
 
+            if (status == 'approved' || status == 'active')
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surface.withValues(alpha: 0.7),
+                  borderRadius: BorderRadius.circular(AppConstants.radius),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Subscription Info",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Space.h10,
+                    isLoadingSubs
+                        ? const CircularProgressIndicator()
+                        : subscription == null
+                            ? const Text("Belum ada data subscription")
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("Start: ${_formatDate(subscription!['start_date'])}"),
+                                  Text("End: ${_formatDate(subscription!['end_date'])}"),
+                                  Text("Status: ${subscription!['status'] ?? '-'}"),
+                                ],
+                              ),
+                  ],
+                ),
+              ),
+
+            Space.h20,
+
             /// 🔥 ACCOUNT INFO
             Container(
               padding: const EdgeInsets.all(16),
@@ -195,9 +267,6 @@ class OrderDetailPage extends StatelessWidget {
 
                   Text("Email: $email"),
                   Text("Password: $password"),
-                  Text(
-                    "Status: ${status == "success" ? "Active" : "Pending"}",
-                  ),
                 ],
               ),
             ),

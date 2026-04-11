@@ -27,7 +27,7 @@ class _AdminOrderPageState extends State<AdminOrderPage>
   }
 
   Future<void> fetch() async {
-    final data = await _service.getOrders();
+    final data = await _service.getAllOrders();
 
     setState(() {
       orders = data;
