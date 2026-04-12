@@ -56,10 +56,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
             print("REGISTER ERROR: $e"); // 🔥 LIHAT DI CONSOLE
 
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text(e.toString())),
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(e.toString())),
 
-  );
+            );
           } finally {
             setState(() => _isLoading = false);
           }

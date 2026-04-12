@@ -199,14 +199,23 @@ class _AdminSettingPageState extends State<AdminSettingPage> {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 50),
                 ),
                 onPressed: () async {
                   await supabase.auth.signOut();
+                  if (!mounted) return;
                   Navigator.pushNamedAndRemoveUntil(
                       context, '/login', (route) => false);
                 },
-                child: const Text("Logout"),
+                child: const Text(
+                  "Logout",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
+              
             ],
           ),
         ),

@@ -73,6 +73,34 @@ class _AdminOrderDetailPageState
 
             const SizedBox(height: 20),
 
+            /// 🔥 BUKTI PAYMENT
+            if (data['payment_proof'] != null &&
+                data['payment_proof'].toString().isNotEmpty)
+              _card(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Bukti Pembayaran",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        data['payment_proof'],
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Text("Gagal load gambar"),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+            const SizedBox(height: 20),
+
             /// 🔥 ACCOUNT INFO (JIKA SUDAH ADA)
             if (data['account_email'] != null)
               _card(
