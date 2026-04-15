@@ -66,134 +66,257 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
             final theme = Theme.of(context);
-    return Scaffold(
-      body: Container(
-        width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            theme.colorScheme.surface,
-            theme.colorScheme.primary.withValues(alpha:0.2),
+            final isDark = theme.brightness == Brightness.dark;
+
+            return Scaffold(
+              body: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: isDark
+                        ? [
+                            const Color(0xFF0D0D18), // dark background
+                            theme.colorScheme.primary.withValues(alpha: 0.2),
+                          ]
+                        : [
+                            Colors.white, // 🔥 light mode fix
+                            theme.colorScheme.primary.withValues(alpha: 0.08),
+                          ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+
+            child: SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppConstants.padding),
+                    child: Column(
+                      children: [
+
+                        /// 🔥 NAVBAR (TAMBAHKAN DI SINI)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.blur_on, size: 20),
+                                const SizedBox(width: 8),
+                                Text(
+                                  "INIARNN.APPREM",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.5,
+                                    color: Theme.of(context).colorScheme.primary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Icon(Icons.more_vert),
+                          ],
+                        ),
+
+                        const SizedBox(height: 25),
+
+                        /// 🔥 LOGO FULL BULAT
+                        Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+                              width: 2,
+                            ),
+                          ),
+                          clipBehavior: Clip.hardEdge,
+                          child: Image.asset(
+                            'assets/images/profile.png',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        Text(
+                          "iniarnn.apprem",
+                          style: TextStyle(
+                            color: theme.colorScheme.primary,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ) ,
+
+                        const SizedBox(height: 5),
+
+                        Text(
+                          "˗ˏˋ apps premium by arnn 🐰 ࿐ྂ",
+                          style: TextStyle(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withValues(alpha: 0.6),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        /// 🔥 CARD LOGIN (UPGRADED)
+
+Container(
+  padding: const EdgeInsets.all(24),
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(28),
+
+    /// 🔥 GRADIENT FIX
+    gradient: LinearGradient(
+      colors: isDark
+          ? [
+              Colors.white.withValues(alpha: 0.05),
+              Colors.white.withValues(alpha: 0.02),
+            ]
+          : [
+              Colors.white,
+              Colors.grey.shade50,
+            ],
+    ),
+
+    /// 🔥 BORDER FIX
+    border: Border.all(
+      color: isDark
+          ? Colors.white.withValues(alpha: 0.1)
+          : Colors.black.withValues(alpha: 0.05),
+    ),
+
+    /// 🔥 SHADOW (BIAR NGANGKAT DI LIGHT MODE)
+    boxShadow: isDark
+        ? []
+        : [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
           ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+  ),
+
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+
+      /// 🔥 TITLE
+      const Text(
+        "WELCOME BACK",
+        style: TextStyle(
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.2,
         ),
       ),
 
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(AppConstants.padding),
-            child: ListView(
-              children: [
+      const SizedBox(height: 8),
 
-                const SizedBox(height: 40),
+      Text(
+        "Enter your credentials to access your dashboard.",
+        style: TextStyle(
+          color: Theme.of(context)
+              .colorScheme
+              .onSurface
+              .withValues(alpha: 0.6),
+        ),
+      ),
 
-                /// 🔥 LOGO + BRAND
-                Column(
-                  children: [
+      const SizedBox(height: 25),
 
-                    /// 🔥 LOGO
-                    Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white.withValues(alpha:0.05),
-                      ),
-                      child: Image.asset(
-                        'assets/images/profile.png',
-                        height: 70,
-                      ),
-                    ),
+      /// 🔥 EMAIL LABEL
+      _label("EMAIL ADDRESS"),
+      _input("your@email.com", controller: _emailController),
 
-                    const SizedBox(height: 15),
+      const SizedBox(height: 20),
 
-                    const Text(
-                      "iniarnn.apprem",
-                      style: TextStyle(
-                        color: Color(0xFFACA3FF),
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+      /// 🔥 PASSWORD LABEL (NO FORGOT)
+      _label("SECURITY KEY"),
+      _input(
+        "••••••••",
+        controller: _passwordController,
+        isPassword: true,
+      ),
 
-                    const SizedBox(height: 5),
+      const SizedBox(height: 20),
 
-                    Text(
-                      "˗ˏˋ apps premium by arnn 🐰 ࿐ྂ",
-                      style: TextStyle (color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
+      /// 🔥 CHECKBOX
+      Row(
+        children: [
+          Checkbox(
+  value: true,
+  onChanged: (_) {},
+  activeColor: theme.colorScheme.primary,
+  checkColor: Colors.white,
+),
+          Text(
+            "Keep session active",
+            style: TextStyle(
+              color: Theme.of(context)
+                  .colorScheme
+                  .onSurface
+                  .withValues(alpha: 0.6),
+            ),
+          )
+        ],
+      ),
 
-                const SizedBox(height: 40),
+      const SizedBox(height: 20),
 
-                /// 🔥 TITLE
-                Text(
-                  "Welcome Back",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+      /// 🔥 BUTTON
+      _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _button(),
 
-                const SizedBox(height: 30),
+      const SizedBox(height: 15),
 
-                /// 🔥 CARD
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha:0.05),
-                    borderRadius:
-                        BorderRadius.circular(AppConstants.radius),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.1),
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-
-                      _input("Email", controller: _emailController),
-                      const SizedBox(height: 16),
-                      _input("Password", controller: _passwordController, isPassword: true),
-
-                      const SizedBox(height: 20),
-
-                      _isLoading
-                          ? const CircularProgressIndicator()
-                      : _button(),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                /// 🔥 REGISTER
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Don't have an account?",
-                        style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.7))),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/register');
-                      },
-                      child: const Text(
-                        "Register",
-                        style: TextStyle(color: Color(0xFFACA3FF)),
-                      ),
-                    )
-                  ],
-                )
-              ],
+      /// 🔥 REGISTER (PINDAH KE DALAM CARD)
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            "Don't have an account?",
+            style: TextStyle(
+              color: Theme.of(context)
+                  .colorScheme
+                  .onSurface
+                  .withValues(alpha: 0.6),
             ),
           ),
-        ),
+          TextButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/register');
+            },
+            child: const Text(
+              "Sign Up",
+              style: TextStyle(color: Color(0xFFACA3FF)),
+            ),
+          )
+        ],
       ),
+    ],
+  ),
+),
+
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
     );
   }
+
+  
 
 Widget _input(
   String hint, {
@@ -213,7 +336,9 @@ Widget _input(
         color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
       ),
       filled: true,
-      fillColor: theme.colorScheme.surface,
+      fillColor: theme.brightness == Brightness.dark
+    ? Colors.black
+    : Colors.grey.shade100,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppConstants.radius),
         borderSide: BorderSide.none,
@@ -241,33 +366,55 @@ Widget _input(
     ),
   );
 }
-  Widget _button() {
+
+Widget _label(String text) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 6),
+    child: Text(
+      text,
+      style: TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 1.2,
+        color: Theme.of(context)
+            .colorScheme
+            .primary
+            .withValues(alpha: 0.8),
+      ),
+    ),
+  );
+}
+    Widget _button() {
     final theme = Theme.of(context);
+
     return GestureDetector(
       onTap: _login,
       child: Container(
         height: 55,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(AppConstants.radius),
+          borderRadius: BorderRadius.circular(20),
           gradient: LinearGradient(
             colors: [
               theme.colorScheme.primary,
               theme.colorScheme.secondary,
-            ]
+            ],
           ),
           boxShadow: [
             BoxShadow(
-              color: Color(0xFF6F5FEA).withValues(alpha:0.6),
-              blurRadius: 20,
+              color: theme.colorScheme.primary.withValues(alpha: 0.5),
+              blurRadius: 25,
             )
           ],
         ),
-        child: const Center(
+                child: Center(
           child: Text(
-            "Login",
+            "SIGN IN",
             style: TextStyle(
-              color: Colors.black,
+              color: theme.brightness == Brightness.dark
+                  ? Colors.black
+                  : Colors.white, // 🔥 FIX LIGHT MODE
               fontWeight: FontWeight.bold,
+              letterSpacing: 1,
             ),
           ),
         ),

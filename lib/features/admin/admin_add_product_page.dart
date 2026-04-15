@@ -23,6 +23,7 @@ class _AdminAddProductPageState
   final durationController = TextEditingController();
 
   String selectedCategory = "Streaming";
+  
 
   XFile? pickedFile;
   Uint8List? imageBytes;
@@ -30,8 +31,8 @@ class _AdminAddProductPageState
   final categories = [
     "Streaming",
     "Music",
-    "Tools",
-    "Other",
+    "Study",
+    "Editing",
   ];
 
   /// 🔥 PICK IMAGE
@@ -114,111 +115,238 @@ class _AdminAddProductPageState
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+@override
+Widget build(BuildContext context) {
+  final theme = Theme.of(context);
 
-    return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
+  return Scaffold(
+    backgroundColor: theme.colorScheme.surface,
 
-      appBar: AppBar(
-        title: const Text("Add Product"),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+    appBar: AppBar(
+      title: const Text("Add Product"),
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+    ),
+
+    body: Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            theme.colorScheme.surface,
+            theme.colorScheme.primary.withValues(alpha: 0.1),
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
       ),
 
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              theme.colorScheme.surface,
-              theme.colorScheme.primary.withValues(alpha: 0.1),
-            ],
-          ),
-        ),
+      child: ListView(
+        padding: const EdgeInsets.all(AppConstants.padding),
+        children: [
 
-        child: ListView(
-          padding: const EdgeInsets.all(AppConstants.padding),
-          children: [
-
-            /// 🔥 IMAGE UPLOAD
-            GestureDetector(
-              onTap: pickImage,
-              child: Container(
-                height: 150,
-                decoration: BoxDecoration(
-                  borderRadius:
-                      BorderRadius.circular(AppConstants.radius),
-                  border: Border.all(),
+          /// 🔥 IMAGE UPLOAD (UPGRADE)
+          GestureDetector(
+            onTap: pickImage,
+            child: Container(
+              height: 160,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
+                  style: BorderStyle.solid,
                 ),
-                child: imageBytes != null
-                    ? ClipRRect(
-                        borderRadius:
-                            BorderRadius.circular(12),
-                        child: Image.memory(imageBytes!,
-                            fit: BoxFit.cover),
-                      )
-                    : const Center(
-                        child: Text("Upload Product Image"),
-                      ),
+              ),
+              child: imageBytes != null
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.memory(imageBytes!, fit: BoxFit.cover),
+                    )
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.cloud_upload,
+                            size: 40,
+                            color: theme.colorScheme.primary),
+                        const SizedBox(height: 10),
+                        const Text("Upload Product Image"),
+                        const SizedBox(height: 5),
+                        Text(
+                          "SVG, PNG, JPG (max. 400x400px)",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: theme.colorScheme.onSurface
+                                .withValues(alpha: 0.5),
+                          ),
+                        ),
+                      ],
+                    ),
+            ),
+          ),
+
+          const SizedBox(height: 25),
+
+          /// 🔥 FORM CARD
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+
+              gradient: LinearGradient(
+                colors: theme.brightness == Brightness.dark
+                    ? [
+                        const Color(0xFF1B1B2F),
+                        const Color(0xFF1F1F3A),
+                      ]
+                    : [
+                        theme.colorScheme.primary.withValues(alpha: 0.08),
+                        theme.colorScheme.surface,
+                      ],
+              ),
+
+              border: Border.all(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
               ),
             ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
 
-            const SizedBox(height: 20),
+                /// PRODUCT NAME
+                _label("PRODUCT NAME"),
+                _input(nameController, "e.g., Netflix Premium"),
 
-            /// 🔥 CARD FORM
-            _card(
-              child: Column(
-                children: [
+                const SizedBox(height: 15),
 
-                  _input(nameController, "Product Name"),
-                  _input(descController, "Description"),
+                /// CATEGORY
+              /// CATEGORY
+              _label("CATEGORY"),
 
-                  /// CATEGORY
-                  DropdownButtonFormField(
-                    value: selectedCategory,
-                    items: categories
-                        .map((c) => DropdownMenuItem(
-                              value: c,
-                              child: Text(c),
-                            ))
-                        .toList(),
-                    onChanged: (value) {
-                      setState(() =>
-                          selectedCategory = value.toString());
-                    },
-                    decoration: const InputDecoration(
-                      labelText: "Category",
-                    ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.black
+                      : Theme.of(context).colorScheme.surface,
+                  border: Border.all(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.1),
+                  ),
+                ),
+                child: DropdownButtonFormField<String>(
+                  /// 🔥 FIX DEPRECATED
+                  initialValue: selectedCategory,
+
+                  dropdownColor: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.black
+                      : Colors.white,
+
+                  icon: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
 
-                  const SizedBox(height: 10),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontWeight: FontWeight.w500,
+                  ),
 
-                  _input(priceController, "Price",
-                      isNumber: true),
-                  _input(durationController, "Duration (days)",
-                      isNumber: true),
-                ],
+                  items: categories.map((c) {
+                    return DropdownMenuItem(
+                      value: c,
+                      child: Text(
+                        c,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+
+                  onChanged: (value) {
+                    setState(() {
+                      selectedCategory = value!;
+                    });
+                  },
+
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+
+                const SizedBox(height: 15),
+
+                /// PRICE + DURATION
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _label("PRICE"),
+                          _input(priceController, "0.00", isNumber: true),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _label("DURATION"),
+                          _input(durationController, "30", isNumber: true),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 15),
+
+                /// DESCRIPTION
+                _label("DESCRIPTION"),
+                _input(descController,
+                    "Describe the features and terms of the subscription...",
+                    maxLines: 4),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 25),
+
+          /// 🔥 BUTTON (UPGRADE)
+          GestureDetector(
+            onTap: saveProduct,
+            child: Container(
+              height: 55,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: LinearGradient(
+                  colors: [
+                    theme.colorScheme.primary,
+                    theme.colorScheme.secondary,
+                  ],
+                ),
+              ),
+              child: const Center(
+                child: Text(
+                  "Save Product",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
               ),
             ),
-
-            const SizedBox(height: 20),
-
-            /// 🔥 SAVE BUTTON
-            ElevatedButton(
-              onPressed: saveProduct,
-              style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 15),
-                backgroundColor: theme.colorScheme.primary,
-              ),
-              child: const Text("Save Product"),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   /// 🔥 CARD UI
   Widget _card({required Widget child}) {
@@ -235,22 +363,35 @@ class _AdminAddProductPageState
     );
   }
 
+  Widget _label(String text) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 6),
+    child: Text(
+      text,
+      style: const TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 1,
+      ),
+    ),
+  );
+}
+
   /// 🔥 INPUT
   Widget _input(TextEditingController controller, String hint,
-      {bool isNumber = false}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: TextField(
-        controller: controller,
-        keyboardType:
-            isNumber ? TextInputType.number : TextInputType.text,
-        decoration: InputDecoration(
-          hintText: hint,
-          filled: true,
-          border: OutlineInputBorder(
-            borderRadius:
-                BorderRadius.circular(AppConstants.radius),
-          ),
+      {bool isNumber = false, int maxLines = 1}) {
+    return TextField(
+      controller: controller,
+      keyboardType:
+          isNumber ? TextInputType.number : TextInputType.text,
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        hintText: hint,
+        filled: true,
+        fillColor: Colors.black,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide.none,
         ),
       ),
     );
