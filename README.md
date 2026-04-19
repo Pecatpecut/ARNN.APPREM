@@ -90,7 +90,7 @@ Data disimpan secara real-time di **Supabase** (PostgreSQL), termasuk tabel `use
 - `AnimationController`, `FadeTransition`, `SlideTransition`
 - `ScaleTransition`, `CurvedAnimation`, `Tween`
 
-### 🧱 Custom Widgets (lib/widgets/)
+### Custom Widgets (lib/widgets/)
 | Widget | Fungsi |
 |---|---|
 | `PrimaryButton` | Tombol utama dengan gradient |
