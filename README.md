@@ -39,7 +39,7 @@ Data disimpan secara real-time di **Supabase** (PostgreSQL), termasuk tabel `use
 | Lihat Masa Aktif | Countdown hari tersisa berdasarkan data subscriptions |
 | Riwayat Pembelian | Daftar semua order dengan filter status |
 | Klaim Garansi | Ajukan klaim dengan pilihan kendala, deskripsi, dan upload screenshot |
-| Detail Garansi | Menampilkan informasi lengkap klaim meliputi status, tanggal pengajuan, deskripsi masalah, bukti foto, progress klaim, serta catatan dari admin |
+| Detail Garansi | Menampilkan detail klaim garansi secara lengkap |
 | Edit Profil | Ubah nama, email, nomor WA, dan password |
 | Dark Mode | Toggle tema gelap/terang |
 | Rules & Terms | Ketentuan sebelum melakukan pembelian |
