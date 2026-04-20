@@ -109,7 +109,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? AppConstants.darkBg1 : Colors.white,
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(

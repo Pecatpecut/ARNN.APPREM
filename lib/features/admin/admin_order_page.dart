@@ -509,7 +509,7 @@ class _AdminOrderPageState extends State<AdminOrderPage>
     final rejectedCount = _getByStatus('rejected').length;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? AppConstants.darkBg1 : Colors.white,
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(

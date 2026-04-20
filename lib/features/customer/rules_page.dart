@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../core/constants.dart';
 
 class RulesPage extends StatelessWidget {
   const RulesPage({super.key});
@@ -57,7 +58,7 @@ class RulesPage extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? AppConstants.darkBg1 : Colors.white,
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(

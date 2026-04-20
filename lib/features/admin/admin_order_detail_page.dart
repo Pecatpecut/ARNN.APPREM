@@ -483,7 +483,7 @@ class _AdminOrderDetailPageState extends State<AdminOrderDetailPage>
     final isApproved = status == 'approved';
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? AppConstants.darkBg1 : Colors.white,
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(

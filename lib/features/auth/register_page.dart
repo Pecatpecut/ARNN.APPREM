@@ -156,7 +156,7 @@
 
       return Scaffold(
         // ✅ Transparan agar gradient terlihat sampai status bar
-        backgroundColor: Colors.transparent,
+        backgroundColor: isDark ? AppConstants.darkBg1 : Colors.white,
         body: Container(
           width: double.infinity,
           decoration: BoxDecoration(

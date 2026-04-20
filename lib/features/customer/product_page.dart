@@ -4,6 +4,7 @@ import '../../widgets/navbar/bottom_navbar.dart';
 import '../../widgets/cards/premium_product_tile.dart';
 import '../../services/product_service.dart';
 
+
 class ProductPage extends StatefulWidget {
   const ProductPage({super.key});
 
@@ -129,7 +130,7 @@ class _ProductPageState extends State<ProductPage>
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? AppConstants.darkBg1 : Colors.white,
       bottomNavigationBar: const CustomBottomNavbar(currentIndex: 1),
       body: Container(
         width: double.infinity,

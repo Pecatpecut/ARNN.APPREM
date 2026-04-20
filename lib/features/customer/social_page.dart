@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../widgets/shared/spacing.dart';
+import '../../core/constants.dart';
 
 class SocialPage extends StatelessWidget {
   const SocialPage({super.key});
@@ -11,7 +12,7 @@ class SocialPage extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? AppConstants.darkBg1 : Colors.white,
 
       body: Container(
         decoration: BoxDecoration(

@@ -134,7 +134,7 @@ class _OrderPageState extends State<OrderPage>
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? AppConstants.darkBg1 : Colors.white,
       extendBody: true,
       bottomNavigationBar: const CustomBottomNavbar(currentIndex: 2),
       body: Container(

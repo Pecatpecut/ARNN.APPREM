@@ -280,7 +280,7 @@ class _AdminSettingPageState extends State<AdminSettingPage>
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? AppConstants.darkBg1 : Colors.white,
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(
@@ -356,6 +356,13 @@ class _AdminSettingPageState extends State<AdminSettingPage>
                                 _buildProfileCard(theme, isDark),
 
                                 const SizedBox(height: 28),
+
+                                // ─────────────────────
+                                // STORE CONFIGURATION
+                                // ─────────────────────
+                                _sectionLabel("KONFIGURASI TOKO", theme),
+                                const SizedBox(height: 12),
+                                _buildConfigCard(theme, isDark, themeProvider),
 
                                 const SizedBox(height: 28),
 

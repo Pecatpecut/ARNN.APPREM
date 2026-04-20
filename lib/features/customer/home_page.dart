@@ -112,7 +112,7 @@ class _HomePageState extends State<HomePage>
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? AppConstants.darkBg1 : Colors.white,
       extendBody: true,
       bottomNavigationBar: const CustomBottomNavbar(currentIndex: 0),
       body: Container(

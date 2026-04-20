@@ -5,6 +5,7 @@ import '../../core/constants.dart';
 import '../../core/theme_provider.dart';
 import '../../widgets/navbar/bottom_navbar.dart';
 
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -221,7 +222,7 @@ class _ProfilePageState extends State<ProfilePage>
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? AppConstants.darkBg1 : Colors.white,
       extendBody: true,
       bottomNavigationBar: const CustomBottomNavbar(currentIndex: 3),
       body: Container(
@@ -295,7 +296,28 @@ class _ProfilePageState extends State<ProfilePage>
                               ),
                             ),
                             const Spacer(),
-                            
+                            // ✅ Toggle dark/light mode
+                            GestureDetector(
+                              onTap: () => themeProvider.toggleTheme(),
+                              child: Container(
+                                width: 38,
+                                height: 38,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: theme.colorScheme.primary
+                                        .withValues(alpha: 0.3),
+                                  ),
+                                ),
+                                child: Icon(
+                                  isDark
+                                      ? Icons.light_mode_outlined
+                                      : Icons.dark_mode_outlined,
+                                  size: 16,
+                                  color: theme.colorScheme.primary,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
 
@@ -462,6 +484,27 @@ class _ProfilePageState extends State<ProfilePage>
 
                         const SizedBox(height: 20),
 
+                        // ─────────────────────────────
+                        // DARK MODE TOGGLE — sebagai menu item
+                        // ─────────────────────────────
+                        _buildToggleItem(
+                          icon: isDark
+                              ? Icons.dark_mode_outlined
+                              : Icons.light_mode_outlined,
+                          title: "Dark Mode",
+                          trailing: Transform.scale(
+                            scale: 0.85,
+                            child: Switch(
+                              value: themeProvider.isDarkMode,
+                              onChanged: (_) => themeProvider.toggleTheme(),
+                              activeColor: theme.colorScheme.primary,
+                            ),
+                          ),
+                          theme: theme,
+                          isDark: isDark,
+                        ),
+
+                        const SizedBox(height: 8),
 
                         // ─────────────────────────────
                         // MENU ITEMS

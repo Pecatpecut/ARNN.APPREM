@@ -279,7 +279,7 @@ class _AdminGaransiDetailPageState extends State<AdminGaransiDetailPage>
         status == 'approved' || status == 'rejected';
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? AppConstants.darkBg1 : Colors.white,
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(

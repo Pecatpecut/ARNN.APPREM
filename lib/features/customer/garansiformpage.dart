@@ -173,7 +173,7 @@ class _GaransiFormPageState extends State<GaransiFormPage>
     final imageUrl = order['products']?['image'];
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? AppConstants.darkBg1 : Colors.white,
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(

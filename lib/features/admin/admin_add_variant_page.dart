@@ -353,7 +353,7 @@ class _AdminAddVariantPageState extends State<AdminAddVariantPage>
     final isEdit = variant != null;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? AppConstants.darkBg1 : Colors.white,
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(

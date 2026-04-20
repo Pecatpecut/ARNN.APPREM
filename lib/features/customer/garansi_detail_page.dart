@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/constants.dart';
 import '../../widgets/shared/status_badge.dart';
 
 class GaransiDetailPage extends StatefulWidget {
@@ -58,7 +59,7 @@ class _GaransiDetailPageState extends State<GaransiDetailPage>
     final imageUrl = data['orders']?['products']?['image'];
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? AppConstants.darkBg1 : Colors.white,
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(

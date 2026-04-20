@@ -307,7 +307,7 @@ class _AdminProductDetailPageState extends State<AdminProductDetailPage>
         List<Map>.from(product['product_variants'] ?? []);
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? AppConstants.darkBg1 : Colors.white,
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(

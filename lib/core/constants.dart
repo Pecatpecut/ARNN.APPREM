@@ -2,7 +2,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 class AppConstants {
   /// APP
-  static const String appName = "Aetheric Flux";
+  static const String appName = "Arnn Apprem";
 
   /// PADDING
   static const double padding = 16.0;

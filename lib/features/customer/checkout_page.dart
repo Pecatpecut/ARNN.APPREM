@@ -134,7 +134,7 @@ class _CheckoutPageState extends State<CheckoutPage>
     final type = variant["type"]?.toString() ?? '-';
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? AppConstants.darkBg1 : Colors.white,
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(

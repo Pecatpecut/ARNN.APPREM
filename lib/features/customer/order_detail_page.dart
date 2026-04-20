@@ -221,7 +221,7 @@ String? _newPaymentProofName;
     if (progress < 0) progress = 0;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? AppConstants.darkBg1 : Colors.white,
       body: Container(
         width: double.infinity,
         // ✅ FIX: tidak pakai AppConstants.darkBg1/darkBg2

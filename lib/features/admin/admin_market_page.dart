@@ -88,7 +88,7 @@ class _AdminMarketPageState extends State<AdminMarketPage>
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? AppConstants.darkBg1 : Colors.white,
       // ✅ FAB tetap ada — hanya style dipercantik
       floatingActionButton: _fab(theme, isDark),
       body: Container(

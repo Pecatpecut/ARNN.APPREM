@@ -103,7 +103,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         : '-';
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? AppConstants.darkBg1 : Colors.white,
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(

@@ -344,7 +344,7 @@ class _PaymentPageState extends State<PaymentPage>
         isUrgent ? Colors.redAccent : theme.colorScheme.primary;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? AppConstants.darkBg1 : Colors.white,
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(
@@ -811,7 +811,7 @@ class _PaymentPageState extends State<PaymentPage>
           const SizedBox(height: 8),
 
           Text(
-            "Merchant: INIARNN.APPREM",
+            "Merchant: ARNN.APPREM",
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.bold,
