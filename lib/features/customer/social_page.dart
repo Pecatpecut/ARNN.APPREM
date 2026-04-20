@@ -156,13 +156,24 @@ class SocialPage extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return GestureDetector(
-      onTap: () async {
-        final uri = Uri.parse(url);
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
+    return InkWell(                    // ← Ganti dari GestureDetector
+    onTap: () async {
+      final uri = Uri.parse(url);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Tidak dapat membuka $title'),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
         }
-      },
+      }
+    },
+
+    borderRadius: BorderRadius.circular(22),
 
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),

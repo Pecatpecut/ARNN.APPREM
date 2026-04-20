@@ -295,29 +295,6 @@ class _ProfilePageState extends State<ProfilePage>
                                 color: theme.colorScheme.primary,
                               ),
                             ),
-                            const Spacer(),
-                            // ✅ Toggle dark/light mode
-                            GestureDetector(
-                              onTap: () => themeProvider.toggleTheme(),
-                              child: Container(
-                                width: 38,
-                                height: 38,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: theme.colorScheme.primary
-                                        .withValues(alpha: 0.3),
-                                  ),
-                                ),
-                                child: Icon(
-                                  isDark
-                                      ? Icons.light_mode_outlined
-                                      : Icons.dark_mode_outlined,
-                                  size: 16,
-                                  color: theme.colorScheme.primary,
-                                ),
-                              ),
-                            ),
                           ],
                         ),
 
