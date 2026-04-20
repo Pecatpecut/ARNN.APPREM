@@ -128,13 +128,11 @@ Digunakan untuk menampilkan grafik batang (bar chart) pendapatan bulanan di **Ad
 - Tooltip interaktif saat batang disentuh
 - Animasi highlight saat batang dipilih
 
-### 4. `google_fonts` *(opsional/tersedia)*
-Memungkinkan penggunaan font dari Google Fonts untuk memperkaya tampilan tipografi aplikasi tanpa perlu mengunduh font secara manual ke dalam assets.
 
-### 5. `provider`
+### 4. `provider`
 Digunakan sebagai state management untuk fitur **dark/light mode** melalui `ThemeProvider` (extends `ChangeNotifier`). Memungkinkan perubahan tema berdampak ke seluruh halaman secara instan tanpa rebuild manual.
 
-### 6. `intl`
+### 5. `intl`
 Digunakan untuk:
 - **Format mata uang** Rupiah (`NumberFormat.currency`) di Admin Dashboard
 
@@ -179,7 +177,6 @@ lib/
 │       ├── garansi_page.dart
 │       ├── garansi_detail_page.dart
 │       ├── garansiformpage.dart
-│       ├── search_page.dart
 │       ├── rules_page.dart
 │       └── social_page.dart
 │
