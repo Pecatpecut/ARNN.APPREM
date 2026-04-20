@@ -539,23 +539,19 @@ class _LoginPageState extends State<LoginPage>
           vertical: 16,
         ),
         suffixIcon: isPassword
-            ? GestureDetector(
-                onTapDown: (_) =>
-                    setState(() => _isPasswordVisible = true),
-                onTapUp: (_) =>
-                    setState(() => _isPasswordVisible = false),
-                onTapCancel: () =>
-                    setState(() => _isPasswordVisible = false),
-                child: Icon(
-                  _isPasswordVisible
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined,
-                  size: 18,
-                  color:
-                      theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                ),
-              )
-            : null,
+    ? GestureDetector(
+        onTap: () =>
+            setState(() => _isPasswordVisible = !_isPasswordVisible),
+        child: Icon(
+          _isPasswordVisible
+              ? Icons.visibility_outlined
+              : Icons.visibility_off_outlined,
+          size: 18,
+          color:
+              theme.colorScheme.onSurface.withValues(alpha: 0.5),
+        ),
+      )
+    : null,
       ),
     );
   }
