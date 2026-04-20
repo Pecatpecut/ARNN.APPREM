@@ -144,10 +144,7 @@ class _AdminGaransiPageState extends State<AdminGaransiPage>
                     position: _slideAnim,
                     child: SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 8,
-                      ),
+                      padding: const EdgeInsets.fromLTRB(24, 8, 24, 1000),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -259,7 +256,7 @@ class _AdminGaransiPageState extends State<AdminGaransiPage>
             ),
             const SizedBox(width: 10),
             Text(
-              "INIARNN.APPREM",
+              "ARNN.APPREM",
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,

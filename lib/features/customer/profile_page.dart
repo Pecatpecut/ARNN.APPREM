@@ -286,7 +286,7 @@ class _ProfilePageState extends State<ProfilePage>
                             ),
                             const SizedBox(width: 10),
                             Text(
-                              "INIARNN.APPREM",
+                              "ARNN.APPREM",
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
@@ -593,7 +593,7 @@ class _ProfilePageState extends State<ProfilePage>
                         // ✅ Version info
                         Center(
                           child: Text(
-                            "v1.0.0 • INIARNN.APPREM",
+                            "v1.0.0 • ARNN.APPREM",
                             style: TextStyle(
                               fontSize: 11,
                               color: theme.colorScheme.onSurface

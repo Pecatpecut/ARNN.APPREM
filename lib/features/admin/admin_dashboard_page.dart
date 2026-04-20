@@ -364,7 +364,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage>
         ),
         const SizedBox(width: 10),
         Text(
-          "INIARNN.APPREM",
+          "ARNN.APPREM",
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 18,

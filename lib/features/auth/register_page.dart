@@ -226,7 +226,7 @@
                             ),
                             const SizedBox(width: 6),
                             Text(
-                              "INIARNN.APPREM",
+                              "ARNN.APPREM",
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,

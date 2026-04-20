@@ -811,7 +811,7 @@ class _PaymentPageState extends State<PaymentPage>
           const SizedBox(height: 8),
 
           Text(
-            "Merchant: VOID_MARKETPLACE",
+            "Merchant: INIARNN.APPREM",
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.bold,

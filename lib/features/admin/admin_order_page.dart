@@ -16,13 +16,9 @@ class _AdminOrderPageState extends State<AdminOrderPage>
   List _orders = [];
   bool _isLoading = true;
   String? _errorMessage;
-
-  // ✅ Sort: 'newest' | 'oldest'
   String _sortOrder = 'newest';
 
   late TabController _tabController;
-
-  // ✅ Animasi konsisten dengan halaman lain
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
   late Animation<Offset> _slideAnim;
@@ -31,7 +27,6 @@ class _AdminOrderPageState extends State<AdminOrderPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-
     _animController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
@@ -43,8 +38,8 @@ class _AdminOrderPageState extends State<AdminOrderPage>
     _slideAnim = Tween<Offset>(
       begin: const Offset(0, 0.06),
       end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _animController, curve: Curves.easeOut));
-
+    ).animate(
+        CurvedAnimation(parent: _animController, curve: Curves.easeOut));
     _fetch();
   }
 
@@ -60,7 +55,6 @@ class _AdminOrderPageState extends State<AdminOrderPage>
       _isLoading = true;
       _errorMessage = null;
     });
-
     try {
       final data = await _service.getAllOrders();
       if (!mounted) return;
@@ -81,8 +75,6 @@ class _AdminOrderPageState extends State<AdminOrderPage>
   List _getByStatus(String status) {
     final filtered =
         _orders.where((o) => o['status'] == status).toList();
-
-    // ✅ Sort berdasarkan created_at
     filtered.sort((a, b) {
       final dateA =
           DateTime.tryParse(a['created_at'] ?? '') ?? DateTime(2000);
@@ -92,11 +84,9 @@ class _AdminOrderPageState extends State<AdminOrderPage>
           ? dateB.compareTo(dateA)
           : dateA.compareTo(dateB);
     });
-
     return filtered;
   }
 
-  // ✅ SnackBar konsisten
   void _showSnackBar(String message, {required bool isError}) {
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
@@ -115,14 +105,12 @@ class _AdminOrderPageState extends State<AdminOrderPage>
         backgroundColor: isError ? Colors.redAccent : Colors.green,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+            borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.all(16),
       ),
     );
   }
 
-  // ✅ Approve dialog — dipercantik & ada validasi
   void _approveDialog(Map order) {
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
@@ -139,6 +127,9 @@ class _AdminOrderPageState extends State<AdminOrderPage>
           builder: (ctx, setDialogState) {
             return Dialog(
               backgroundColor: Colors.transparent,
+              // ✅ insetPadding agar dialog tidak terlalu lebar di HP besar
+              insetPadding: const EdgeInsets.symmetric(
+                  horizontal: 24, vertical: 40),
               child: Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
@@ -146,7 +137,7 @@ class _AdminOrderPageState extends State<AdminOrderPage>
                   gradient: LinearGradient(
                     colors: isDark
                         ? [
-                            const Color(0xFF1B1B2F),
+                            AppConstants.darkBg2,
                             const Color(0xFF23233A),
                           ]
                         : [Colors.white, Colors.grey.shade50],
@@ -170,7 +161,6 @@ class _AdminOrderPageState extends State<AdminOrderPage>
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Header
                     Row(
                       children: [
                         Container(
@@ -187,32 +177,35 @@ class _AdminOrderPageState extends State<AdminOrderPage>
                           ),
                         ),
                         const SizedBox(width: 10),
-                        Text(
-                          "Input Akun",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.onSurface,
+                        // ✅ Flexible agar teks tidak overflow
+                        Flexible(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Input Akun",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.colorScheme.onSurface,
+                                ),
+                              ),
+                              Text(
+                                order['product_name'] ?? '-',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: theme.colorScheme.onSurface
+                                      .withValues(alpha: 0.5),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 6),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 2),
-                      child: Text(
-                        order['product_name'] ?? '-',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color:
-                              theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                        ),
-                      ),
-                    ),
-
                     const SizedBox(height: 20),
-
-                    // Email field
                     _dialogLabel("EMAIL AKUN", theme),
                     _dialogInput(
                       "email@example.com",
@@ -222,10 +215,7 @@ class _AdminOrderPageState extends State<AdminOrderPage>
                       isDark: isDark,
                       inputType: TextInputType.emailAddress,
                     ),
-
                     const SizedBox(height: 14),
-
-                    // Password field
                     _dialogLabel("PASSWORD AKUN", theme),
                     _dialogInput(
                       "••••••••",
@@ -234,10 +224,7 @@ class _AdminOrderPageState extends State<AdminOrderPage>
                       theme: theme,
                       isDark: isDark,
                     ),
-
                     const SizedBox(height: 24),
-
-                    // Buttons
                     Row(
                       children: [
                         Expanded(
@@ -248,8 +235,8 @@ class _AdminOrderPageState extends State<AdminOrderPage>
                             child: Container(
                               height: 48,
                               decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.circular(AppConstants.radius),
+                                borderRadius: BorderRadius.circular(
+                                    AppConstants.radius),
                                 border: Border.all(
                                   color: theme.colorScheme.onSurface
                                       .withValues(alpha: 0.2),
@@ -274,62 +261,57 @@ class _AdminOrderPageState extends State<AdminOrderPage>
                             onTap: isSaving
                                 ? null
                                 : () async {
-                                    // ✅ Validasi
-                                    if (emailController.text.trim().isEmpty ||
+                                    if (emailController.text
+                                            .trim()
+                                            .isEmpty ||
                                         passwordController.text
                                             .trim()
                                             .isEmpty) {
                                       _showSnackBar(
-                                        "Email & password wajib diisi",
-                                        isError: true,
-                                      );
+                                          "Email & password wajib diisi",
+                                          isError: true);
                                       return;
                                     }
-
-                                    setDialogState(() => isSaving = true);
-
+                                    setDialogState(
+                                        () => isSaving = true);
                                     try {
                                       await _service.approveOrderManual(
                                         orderId: order['id'],
-                                        email: emailController.text.trim(),
-                                        password:
-                                            passwordController.text.trim(),
+                                        email:
+                                            emailController.text.trim(),
+                                        password: passwordController.text
+                                            .trim(),
                                       );
-
                                       if (!mounted) return;
                                       Navigator.pop(ctx);
                                       _showSnackBar(
-                                        "Order berhasil di-approve!",
-                                        isError: false,
-                                      );
+                                          "Order berhasil di-approve!",
+                                          isError: false);
                                       _fetch();
                                     } catch (e) {
                                       if (!mounted) return;
-                                      setDialogState(() => isSaving = false);
+                                      setDialogState(
+                                          () => isSaving = false);
                                       _showSnackBar(
-                                        e
-                                            .toString()
-                                            .replaceAll('Exception: ', ''),
-                                        isError: true,
-                                      );
+                                          e.toString().replaceAll(
+                                              'Exception: ', ''),
+                                          isError: true);
                                     }
                                   },
                             child: Container(
                               height: 48,
                               decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.circular(AppConstants.radius),
+                                borderRadius: BorderRadius.circular(
+                                    AppConstants.radius),
                                 gradient: LinearGradient(
                                   colors: [
-                                    Theme.of(context).colorScheme.primary,
-                                    Theme.of(context).colorScheme.secondary,
+                                    theme.colorScheme.primary,
+                                    theme.colorScheme.secondary,
                                   ],
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .primary
+                                    color: theme.colorScheme.primary
                                         .withValues(alpha: 0.4),
                                     blurRadius: 14,
                                     offset: const Offset(0, 4),
@@ -369,7 +351,6 @@ class _AdminOrderPageState extends State<AdminOrderPage>
     );
   }
 
-  // ✅ Reject dengan konfirmasi
   void _rejectDialog(Map order) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
@@ -378,18 +359,19 @@ class _AdminOrderPageState extends State<AdminOrderPage>
       context: context,
       builder: (ctx) => Dialog(
         backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(
+            horizontal: 24, vertical: 40),
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(28),
             gradient: LinearGradient(
               colors: isDark
-                  ? [const Color(0xFF1B1B2F), const Color(0xFF23233A)]
+                  ? [AppConstants.darkBg2, const Color(0xFF23233A)]
                   : [Colors.white, Colors.grey.shade50],
             ),
             border: Border.all(
-              color: Colors.redAccent.withValues(alpha: 0.25),
-            ),
+                color: Colors.redAccent.withValues(alpha: 0.25)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.3),
@@ -407,11 +389,8 @@ class _AdminOrderPageState extends State<AdminOrderPage>
                   shape: BoxShape.circle,
                   color: Colors.redAccent.withValues(alpha: 0.12),
                 ),
-                child: const Icon(
-                  Icons.cancel_outlined,
-                  size: 28,
-                  color: Colors.redAccent,
-                ),
+                child: const Icon(Icons.cancel_outlined,
+                    size: 28, color: Colors.redAccent),
               ),
               const SizedBox(height: 14),
               Text(
@@ -423,12 +402,16 @@ class _AdminOrderPageState extends State<AdminOrderPage>
                 ),
               ),
               const SizedBox(height: 6),
+              // ✅ Flexible teks panjang
               Text(
                 "Order ${order['product_name']} akan ditolak.\nTindakan ini tidak bisa dibatalkan.",
                 textAlign: TextAlign.center,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: 13,
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                  color: theme.colorScheme.onSurface
+                      .withValues(alpha: 0.5),
                   height: 1.5,
                 ),
               ),
@@ -441,8 +424,8 @@ class _AdminOrderPageState extends State<AdminOrderPage>
                       child: Container(
                         height: 46,
                         decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(AppConstants.radius),
+                          borderRadius: BorderRadius.circular(
+                              AppConstants.radius),
                           border: Border.all(
                             color: theme.colorScheme.onSurface
                                 .withValues(alpha: 0.2),
@@ -470,25 +453,26 @@ class _AdminOrderPageState extends State<AdminOrderPage>
                           await _service.updateOrderStatus(
                               order['id'], 'rejected');
                           if (!mounted) return;
-                          _showSnackBar("Order ditolak", isError: false);
+                          _showSnackBar("Order ditolak",
+                              isError: false);
                           _fetch();
                         } catch (e) {
                           if (!mounted) return;
                           _showSnackBar(
-                            e.toString().replaceAll('Exception: ', ''),
-                            isError: true,
-                          );
+                              e.toString().replaceAll('Exception: ', ''),
+                              isError: true);
                         }
                       },
                       child: Container(
                         height: 46,
                         decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(AppConstants.radius),
+                          borderRadius: BorderRadius.circular(
+                              AppConstants.radius),
                           color: Colors.redAccent,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.redAccent.withValues(alpha: 0.35),
+                              color: Colors.redAccent
+                                  .withValues(alpha: 0.35),
                               blurRadius: 12,
                               offset: const Offset(0, 4),
                             ),
@@ -532,8 +516,8 @@ class _AdminOrderPageState extends State<AdminOrderPage>
           gradient: LinearGradient(
             colors: isDark
                 ? [
-                    const Color(0xFF0A0A14),
-                    const Color(0xFF111124),
+                    AppConstants.darkBg1,
+                    AppConstants.darkBg2,
                     theme.colorScheme.primary.withValues(alpha: 0.18),
                   ]
                 : [
@@ -549,15 +533,10 @@ class _AdminOrderPageState extends State<AdminOrderPage>
         child: SafeArea(
           child: Column(
             children: [
-
-              // ─────────────────────────────
-              // APPBAR CUSTOM
-              // ─────────────────────────────
+              // ── APPBAR ──
               Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 16,
-                ),
+                    horizontal: 24, vertical: 16),
                 child: Row(
                   children: [
                     GestureDetector(
@@ -572,11 +551,9 @@ class _AdminOrderPageState extends State<AdminOrderPage>
                                 .withValues(alpha: 0.3),
                           ),
                         ),
-                        child: Icon(
-                          Icons.arrow_back_ios_new,
-                          size: 16,
-                          color: theme.colorScheme.primary,
-                        ),
+                        child: Icon(Icons.arrow_back_ios_new,
+                            size: 16,
+                            color: theme.colorScheme.primary),
                       ),
                     ),
                     const Spacer(),
@@ -590,7 +567,6 @@ class _AdminOrderPageState extends State<AdminOrderPage>
                       ),
                     ),
                     const Spacer(),
-                    // Refresh button
                     GestureDetector(
                       onTap: _isLoading ? null : _fetch,
                       child: Container(
@@ -611,20 +587,16 @@ class _AdminOrderPageState extends State<AdminOrderPage>
                                   color: theme.colorScheme.primary,
                                 ),
                               )
-                            : Icon(
-                                Icons.refresh_rounded,
+                            : Icon(Icons.refresh_rounded,
                                 size: 18,
-                                color: theme.colorScheme.primary,
-                              ),
+                                color: theme.colorScheme.primary),
                       ),
                     ),
                   ],
                 ),
               ),
 
-              // ─────────────────────────────
-              // SUMMARY STATS
-              // ─────────────────────────────
+              // ── STATS ──
               if (!_isLoading && _errorMessage == null)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -653,9 +625,7 @@ class _AdminOrderPageState extends State<AdminOrderPage>
 
               const SizedBox(height: 16),
 
-              // ─────────────────────────────
-              // TAB BAR
-              // ─────────────────────────────
+              // ── TAB BAR ──
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Container(
@@ -683,8 +653,8 @@ class _AdminOrderPageState extends State<AdminOrderPage>
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color:
-                              theme.colorScheme.primary.withValues(alpha: 0.35),
+                          color: theme.colorScheme.primary
+                              .withValues(alpha: 0.35),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -701,29 +671,28 @@ class _AdminOrderPageState extends State<AdminOrderPage>
                     ),
                     tabs: [
                       _tabItem("Pending", pendingCount, Colors.orange),
-                      _tabItem("Approved", approvedCount, Colors.green),
-                      _tabItem("Rejected", rejectedCount, Colors.redAccent),
+                      _tabItem(
+                          "Approved", approvedCount, Colors.green),
+                      _tabItem(
+                          "Rejected", rejectedCount, Colors.redAccent),
                     ],
                   ),
                 ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
 
-              // ─────────────────────────────
-              // SORT TOGGLE
-              // ─────────────────────────────
+              // ── SORT TOGGLE ──
               if (!_isLoading && _errorMessage == null)
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+                  padding:
+                      const EdgeInsets.fromLTRB(24, 8, 24, 0),
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.sort_rounded,
-                        size: 14,
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.4),
-                      ),
+                      Icon(Icons.sort_rounded,
+                          size: 14,
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.4)),
                       const SizedBox(width: 6),
                       Text(
                         "Urutkan:",
@@ -755,9 +724,7 @@ class _AdminOrderPageState extends State<AdminOrderPage>
 
               const SizedBox(height: 12),
 
-              // ─────────────────────────────
-              // CONTENT
-              // ─────────────────────────────
+              // ── CONTENT ──
               Expanded(
                 child: _isLoading
                     ? Center(
@@ -775,12 +742,21 @@ class _AdminOrderPageState extends State<AdminOrderPage>
                               child: TabBarView(
                                 controller: _tabController,
                                 children: [
-                                  _buildList(_getByStatus('pending'),
-                                      'pending', theme, isDark),
-                                  _buildList(_getByStatus('approved'),
-                                      'approved', theme, isDark),
-                                  _buildList(_getByStatus('rejected'),
-                                      'rejected', theme, isDark),
+                                  _buildList(
+                                      _getByStatus('pending'),
+                                      'pending',
+                                      theme,
+                                      isDark),
+                                  _buildList(
+                                      _getByStatus('approved'),
+                                      'approved',
+                                      theme,
+                                      isDark),
+                                  _buildList(
+                                      _getByStatus('rejected'),
+                                      'rejected',
+                                      theme,
+                                      isDark),
                                 ],
                               ),
                             ),
@@ -788,6 +764,318 @@ class _AdminOrderPageState extends State<AdminOrderPage>
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  // ─────────────────────────────────────
+  // BUILD LIST — ✅ SingleChildScrollView wrapping ListView
+  // ─────────────────────────────────────
+  Widget _buildList(
+      List data, String status, ThemeData theme, bool isDark) {
+    if (data.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              status == 'pending'
+                  ? Icons.hourglass_empty_outlined
+                  : status == 'approved'
+                      ? Icons.check_circle_outline
+                      : Icons.cancel_outlined,
+              size: 44,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              "Tidak ada order $status",
+              style: TextStyle(
+                color:
+                    theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // ✅ ListView dengan physics bouncing + shrinkWrap false
+    // Tidak perlu SingleChildScrollView karena ListView sudah scrollable
+    // Key: pastikan padding bawah cukup agar card terakhir tidak terpotong
+    return ListView.builder(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(24, 4, 24, 32),
+      itemCount: data.length,
+      itemBuilder: (_, i) => _orderCard(data[i], theme, isDark),
+    );
+  }
+
+  // ─────────────────────────────────────
+  // ORDER CARD — semua Row di-fix overflow
+  // ─────────────────────────────────────
+  Widget _orderCard(Map order, ThemeData theme, bool isDark) {
+    final status = order['status'] ?? 'pending';
+    final isApproved = status == 'approved';
+    final isPending = status == 'pending';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(22),
+        gradient: LinearGradient(
+          colors: isDark
+              ? [
+                  Colors.white.withValues(alpha: 0.06),
+                  Colors.white.withValues(alpha: 0.02),
+                ]
+              : [Colors.white, Colors.grey.shade50],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.07)
+              : Colors.black.withValues(alpha: 0.04),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.2)
+                : Colors.black.withValues(alpha: 0.05),
+            blurRadius: 14,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      // ✅ GestureDetector di luar container agar tap area full
+      child: InkWell(
+        borderRadius: BorderRadius.circular(22),
+        onTap: () => Navigator.pushNamed(
+          context,
+          '/admin-order-detail',
+          arguments: order,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min, // ✅ min agar tidak expand berlebihan
+          children: [
+
+            // ── Baris atas: icon + nama + badge ──
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: theme.colorScheme.primary
+                        .withValues(alpha: 0.1),
+                  ),
+                  child: Icon(Icons.inventory_2_outlined,
+                      size: 16, color: theme.colorScheme.primary),
+                ),
+                const SizedBox(width: 10),
+                // ✅ Expanded agar nama produk tidak push badge keluar
+                Expanded(
+                  child: Text(
+                    order['product_name'] ?? '-',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // ✅ Badge tidak di-Expanded — ukurannya intrinsic
+                _statusBadge(status, theme),
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+            // ── Info chips: variant + harga ──
+            // ✅ Wrap agar tidak overflow jika teks panjang
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              children: [
+                _infoChip(
+                  Icons.layers_outlined,
+                  order['variant_type'] ?? '-',
+                  theme,
+                  isDark,
+                ),
+                _infoChip(
+                  Icons.payments_outlined,
+                  "Rp ${order['price'] ?? 0}",
+                  theme,
+                  isDark,
+                  isHighlight: true,
+                ),
+              ],
+            ),
+
+            // ── Tanggal ──
+            if (order['created_at'] != null) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(
+                    Icons.access_time_outlined,
+                    size: 12,
+                    color: theme.colorScheme.onSurface
+                        .withValues(alpha: 0.35),
+                  ),
+                  const SizedBox(width: 4),
+                  // ✅ Flexible agar tanggal tidak overflow
+                  Flexible(
+                    child: Text(
+                      _formatOrderDate(order['created_at']),
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: theme.colorScheme.onSurface
+                            .withValues(alpha: 0.4),
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+
+            // ── Account email (approved) ──
+            if (isApproved && order['account_email'] != null) ...[
+              const SizedBox(height: 12),
+              Divider(
+                color: theme.colorScheme.onSurface
+                    .withValues(alpha: 0.07),
+                height: 1,
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Icon(Icons.mail_outline,
+                      size: 13,
+                      color: theme.colorScheme.onSurface
+                          .withValues(alpha: 0.4)),
+                  const SizedBox(width: 6),
+                  // ✅ Flexible agar email panjang tidak overflow
+                  Flexible(
+                    child: Text(
+                      order['account_email'],
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: theme.colorScheme.onSurface
+                            .withValues(alpha: 0.6),
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+
+            // ── Action buttons (pending only) ──
+            if (isPending) ...[
+              const SizedBox(height: 14),
+              Divider(
+                color: theme.colorScheme.onSurface
+                    .withValues(alpha: 0.07),
+                height: 1,
+              ),
+              const SizedBox(height: 10),
+              // ✅ Row dengan MainAxisAlignment.end — tombol tidak perlu Expanded
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  // Reject
+                  GestureDetector(
+                    onTap: () => _rejectDialog(order),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 9),
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            BorderRadius.circular(AppConstants.radius),
+                        border: Border.all(
+                          color:
+                              Colors.redAccent.withValues(alpha: 0.4),
+                        ),
+                        color: Colors.redAccent.withValues(alpha: 0.07),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Icon(Icons.close,
+                              size: 14, color: Colors.redAccent),
+                          SizedBox(width: 4),
+                          Text(
+                            "Tolak",
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.redAccent,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  // Approve
+                  GestureDetector(
+                    onTap: () => _approveDialog(order),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 9),
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            BorderRadius.circular(AppConstants.radius),
+                        gradient: LinearGradient(
+                          colors: [
+                            theme.colorScheme.primary,
+                            theme.colorScheme.secondary,
+                          ],
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: theme.colorScheme.primary
+                                .withValues(alpha: 0.35),
+                            blurRadius: 10,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Icon(Icons.check,
+                              size: 14, color: Colors.white),
+                          SizedBox(width: 4),
+                          Text(
+                            "Approve",
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ],
         ),
       ),
     );
@@ -803,11 +1091,17 @@ class _AdminOrderPageState extends State<AdminOrderPage>
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(label),
+          Flexible(
+            child: Text(
+              label,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
           if (count > 0) ...[
             const SizedBox(width: 5),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(6),
                 color: dotColor.withValues(alpha: 0.25),
@@ -882,12 +1176,10 @@ class _AdminOrderPageState extends State<AdminOrderPage>
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           gradient: isSelected
-              ? LinearGradient(
-                  colors: [
-                    theme.colorScheme.primary,
-                    theme.colorScheme.secondary,
-                  ],
-                )
+              ? LinearGradient(colors: [
+                  theme.colorScheme.primary,
+                  theme.colorScheme.secondary,
+                ])
               : null,
           color: isSelected
               ? null
@@ -950,11 +1242,8 @@ class _AdminOrderPageState extends State<AdminOrderPage>
                 shape: BoxShape.circle,
                 color: Colors.redAccent.withValues(alpha: 0.1),
               ),
-              child: const Icon(
-                Icons.wifi_off_outlined,
-                size: 36,
-                color: Colors.redAccent,
-              ),
+              child: const Icon(Icons.wifi_off_outlined,
+                  size: 36, color: Colors.redAccent),
             ),
             const SizedBox(height: 16),
             Text(
@@ -982,17 +1271,16 @@ class _AdminOrderPageState extends State<AdminOrderPage>
                 padding: const EdgeInsets.symmetric(
                     horizontal: 28, vertical: 12),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(AppConstants.radius),
-                  gradient: LinearGradient(
-                    colors: [
-                      theme.colorScheme.primary,
-                      theme.colorScheme.secondary,
-                    ],
-                  ),
+                  borderRadius:
+                      BorderRadius.circular(AppConstants.radius),
+                  gradient: LinearGradient(colors: [
+                    theme.colorScheme.primary,
+                    theme.colorScheme.secondary,
+                  ]),
                   boxShadow: [
                     BoxShadow(
-                      color:
-                          theme.colorScheme.primary.withValues(alpha: 0.35),
+                      color: theme.colorScheme.primary
+                          .withValues(alpha: 0.35),
                       blurRadius: 14,
                       offset: const Offset(0, 4),
                     ),
@@ -1001,298 +1289,10 @@ class _AdminOrderPageState extends State<AdminOrderPage>
                 child: const Text(
                   "Coba Lagi",
                   style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildList(
-      List data, String status, ThemeData theme, bool isDark) {
-    if (data.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              status == 'pending'
-                  ? Icons.hourglass_empty_outlined
-                  : status == 'approved'
-                      ? Icons.check_circle_outline
-                      : Icons.cancel_outlined,
-              size: 44,
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              "Tidak ada order $status",
-              style: TextStyle(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
-                fontSize: 14,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return ListView.builder(
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(24, 4, 24, 24),
-      itemCount: data.length,
-      itemBuilder: (_, i) => _orderCard(data[i], theme, isDark),
-    );
-  }
-
-  Widget _orderCard(Map order, ThemeData theme, bool isDark) {
-    final status = order['status'] ?? 'pending';
-    final isApproved = status == 'approved';
-    final isPending = status == 'pending';
-
-    return GestureDetector(
-      onTap: () => Navigator.pushNamed(
-        context,
-        '/admin-order-detail',
-        arguments: order,
-      ),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 14),
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(22),
-          gradient: LinearGradient(
-            colors: isDark
-                ? [
-                    Colors.white.withValues(alpha: 0.06),
-                    Colors.white.withValues(alpha: 0.02),
-                  ]
-                : [Colors.white, Colors.grey.shade50],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          border: Border.all(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.07)
-                : Colors.black.withValues(alpha: 0.04),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: isDark
-                  ? Colors.black.withValues(alpha: 0.2)
-                  : Colors.black.withValues(alpha: 0.05),
-              blurRadius: 14,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-
-            // ── Baris atas: nama produk + badge
-            Row(
-              children: [
-                // Icon box produk
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                  ),
-                  child: Icon(
-                    Icons.inventory_2_outlined,
-                    size: 16,
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    order['product_name'] ?? '-',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: theme.colorScheme.onSurface,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                _statusBadge(status, theme),
-              ],
-            ),
-
-            const SizedBox(height: 14),
-
-            // ── Info row: variant + harga
-            Row(
-              children: [
-                _infoChip(
-                  Icons.layers_outlined,
-                  order['variant_type'] ?? '-',
-                  theme,
-                  isDark,
-                ),
-                const SizedBox(width: 8),
-                _infoChip(
-                  Icons.payments_outlined,
-                  "Rp ${order['price'] ?? 0}",
-                  theme,
-                  isDark,
-                  isHighlight: true,
-                ),
-              ],
-            ),
-
-            // ── Tanggal order
-            if (order['created_at'] != null) ...[
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(
-                    Icons.access_time_outlined,
-                    size: 12,
-                    color: theme.colorScheme.onSurface
-                        .withValues(alpha: 0.35),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    _formatOrderDate(order['created_at']),
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: theme.colorScheme.onSurface
-                          .withValues(alpha: 0.4),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-
-            // ── Account info (jika sudah approved)
-            if (isApproved &&
-                order['account_email'] != null) ...[
-              const SizedBox(height: 12),
-              Divider(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.07),
-                height: 1,
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Icon(
-                    Icons.mail_outline,
-                    size: 13,
-                    color:
-                        theme.colorScheme.onSurface.withValues(alpha: 0.4),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    order['account_email'],
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: theme.colorScheme.onSurface
-                          .withValues(alpha: 0.6),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-
-            // ── Action buttons (hanya pending)
-            if (isPending) ...[
-              const SizedBox(height: 14),
-              Divider(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.07),
-                height: 1,
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  // Reject button
-                  GestureDetector(
-                    onTap: () => _rejectDialog(order),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.circular(AppConstants.radius),
-                        border: Border.all(
-                          color: Colors.redAccent.withValues(alpha: 0.4),
-                        ),
-                        color: Colors.redAccent.withValues(alpha: 0.07),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.close,
-                              size: 14, color: Colors.redAccent),
-                          const SizedBox(width: 4),
-                          const Text(
-                            "Tolak",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.redAccent,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  // Approve button
-                  GestureDetector(
-                    onTap: () => _approveDialog(order),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.circular(AppConstants.radius),
-                        gradient: LinearGradient(
-                          colors: [
-                            Theme.of(context).colorScheme.primary,
-                            Theme.of(context).colorScheme.secondary,
-                          ],
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .primary
-                                .withValues(alpha: 0.35),
-                            blurRadius: 10,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: const [
-                          Icon(Icons.check, size: 14, color: Colors.white),
-                          SizedBox(width: 4),
-                          Text(
-                            "Approve",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
           ],
         ),
       ),
@@ -1335,7 +1335,8 @@ class _AdminOrderPageState extends State<AdminOrderPage>
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding:
+          const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: color.withValues(alpha: 0.12),
@@ -1367,7 +1368,8 @@ class _AdminOrderPageState extends State<AdminOrderPage>
     bool isHighlight = false,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding:
+          const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         color: isDark
@@ -1380,7 +1382,7 @@ class _AdminOrderPageState extends State<AdminOrderPage>
         ),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.min, // ✅ intrinsic width
         children: [
           Icon(
             icon,
@@ -1390,14 +1392,19 @@ class _AdminOrderPageState extends State<AdminOrderPage>
                 : theme.colorScheme.onSurface.withValues(alpha: 0.45),
           ),
           const SizedBox(width: 5),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: isHighlight
-                  ? theme.colorScheme.primary
-                  : theme.colorScheme.onSurface.withValues(alpha: 0.7),
+          // ✅ ConstrainedBox agar chip tidak terlalu lebar
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 160),
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: isHighlight
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurface.withValues(alpha: 0.7),
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
@@ -1405,7 +1412,6 @@ class _AdminOrderPageState extends State<AdminOrderPage>
     );
   }
 
-  // Helper untuk input di dalam dialog
   Widget _dialogLabel(String text, ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -1432,37 +1438,38 @@ class _AdminOrderPageState extends State<AdminOrderPage>
     return TextField(
       controller: controller,
       keyboardType: inputType,
-      style: TextStyle(fontSize: 14, color: theme.colorScheme.onSurface),
+      style:
+          TextStyle(fontSize: 14, color: theme.colorScheme.onSurface),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: TextStyle(
           fontSize: 13,
-          color: theme.colorScheme.onSurface.withValues(alpha: 0.35),
+          color:
+              theme.colorScheme.onSurface.withValues(alpha: 0.35),
         ),
-        prefixIcon: Icon(
-          icon,
-          size: 18,
-          color: theme.colorScheme.primary.withValues(alpha: 0.6),
-        ),
+        prefixIcon: Icon(icon,
+            size: 18,
+            color:
+                theme.colorScheme.primary.withValues(alpha: 0.6)),
         filled: true,
         fillColor: isDark
             ? Colors.black.withValues(alpha: 0.35)
             : Colors.grey.shade100,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppConstants.radius),
+          borderRadius:
+              BorderRadius.circular(AppConstants.radius),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppConstants.radius),
+          borderRadius:
+              BorderRadius.circular(AppConstants.radius),
           borderSide: BorderSide(
             color: theme.colorScheme.primary.withValues(alpha: 0.5),
             width: 1.5,
           ),
         ),
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
+            horizontal: 16, vertical: 14),
       ),
     );
   }

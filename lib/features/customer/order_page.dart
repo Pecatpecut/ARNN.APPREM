@@ -20,11 +20,9 @@ class _OrderPageState extends State<OrderPage>
   bool _isLoading = true;
   String? _errorMessage;
 
-  // ✅ Filter & search state — dipindah ke dalam class (tidak global)
   String _selectedFilter = 'all';
   final _searchController = TextEditingController();
 
-  // ✅ Animasi konsisten
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
   late Animation<Offset> _slideAnim;
@@ -42,7 +40,6 @@ class _OrderPageState extends State<OrderPage>
       begin: const Offset(0, 0.06),
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _animController, curve: Curves.easeOut));
-
     _fetchOrders();
   }
 
@@ -58,7 +55,6 @@ class _OrderPageState extends State<OrderPage>
       _isLoading = true;
       _errorMessage = null;
     });
-
     try {
       final data = await _orderService.getOrders();
       if (!mounted) return;
@@ -73,7 +69,6 @@ class _OrderPageState extends State<OrderPage>
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        // ✅ Hapus print() — tampil di UI saja
         _errorMessage = e.toString().replaceAll('Exception: ', '');
       });
     }
@@ -89,18 +84,20 @@ class _OrderPageState extends State<OrderPage>
           DateTime.tryParse(order['created_at'] ?? '') ?? now;
       final duration = order['duration_days'] ?? 30;
       final endDate = createdAt.add(Duration(days: duration));
-
       int remaining = endDate.difference(now).inDays;
       if (remaining < 0) remaining = 0;
 
       final isActive = status == 'approved' && remaining > 0;
       final isPending = status == 'pending';
       final isExpired = status == 'approved' && remaining == 0;
+      // ✅ Tambah rejected
+      final isRejected = status == 'rejected';
 
       final matchFilter = _selectedFilter == 'all' ||
           (_selectedFilter == 'active' && isActive) ||
           (_selectedFilter == 'pending' && isPending) ||
-          (_selectedFilter == 'expired' && isExpired);
+          (_selectedFilter == 'expired' && isExpired) ||
+          (_selectedFilter == 'rejected' && isRejected);
 
       final name =
           (order['product_name'] ?? '').toString().toLowerCase();
@@ -112,7 +109,6 @@ class _OrderPageState extends State<OrderPage>
     setState(() => _filteredOrders = temp);
   }
 
-  // ✅ Hitung count per filter untuk badge
   int _countByFilter(String filter) {
     if (filter == 'all') return _orders.length;
     final now = DateTime.now();
@@ -124,11 +120,10 @@ class _OrderPageState extends State<OrderPage>
       final endDate = createdAt.add(Duration(days: duration));
       int remaining = endDate.difference(now).inDays;
       if (remaining < 0) remaining = 0;
-      if (filter == 'active')
-        return status == 'approved' && remaining > 0;
+      if (filter == 'active') return status == 'approved' && remaining > 0;
       if (filter == 'pending') return status == 'pending';
-      if (filter == 'expired')
-        return status == 'approved' && remaining == 0;
+      if (filter == 'expired') return status == 'approved' && remaining == 0;
+      if (filter == 'rejected') return status == 'rejected';
       return false;
     }).length;
   }
@@ -168,15 +163,14 @@ class _OrderPageState extends State<OrderPage>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
-              // ─────────────────────────────
-              // NAVBAR + HEADING
-              // ─────────────────────────────
+              // ── Header (fixed, tidak scroll)
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Navbar
+
+                    // Navbar row
                     Row(
                       children: [
                         Icon(Icons.blur_on,
@@ -192,7 +186,6 @@ class _OrderPageState extends State<OrderPage>
                           ),
                         ),
                         const Spacer(),
-                        // ✅ Refresh button
                         GestureDetector(
                           onTap: _isLoading ? null : _fetchOrders,
                           child: Container(
@@ -213,11 +206,8 @@ class _OrderPageState extends State<OrderPage>
                                       color: theme.colorScheme.primary,
                                     ),
                                   )
-                                : Icon(
-                                    Icons.refresh_rounded,
-                                    size: 18,
-                                    color: theme.colorScheme.primary,
-                                  ),
+                                : Icon(Icons.refresh_rounded,
+                                    size: 18, color: theme.colorScheme.primary),
                           ),
                         ),
                       ],
@@ -225,24 +215,13 @@ class _OrderPageState extends State<OrderPage>
 
                     const SizedBox(height: 20),
 
-                    // Heading
-                    Text(
-                      "MY ORDERS",
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.8,
-                        color: theme.colorScheme.primary
-                            .withValues(alpha: 0.6),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
+                    // Judul + count
                     Row(
                       children: [
                         Text(
                           "Riwayat Order",
                           style: TextStyle(
-                            fontSize: 24,
+                            fontSize: 22,
                             fontWeight: FontWeight.bold,
                             color: theme.colorScheme.onSurface,
                           ),
@@ -269,15 +248,13 @@ class _OrderPageState extends State<OrderPage>
                       ],
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 14),
 
-                    // ─────────────────────────────
-                    // SEARCH BAR
-                    // ─────────────────────────────
+                    // Search bar
                     Container(
-                      height: 48,
+                      height: 46,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(14),
                         color: isDark
                             ? Colors.white.withValues(alpha: 0.06)
                             : Colors.grey.shade100,
@@ -290,21 +267,18 @@ class _OrderPageState extends State<OrderPage>
                       child: Row(
                         children: [
                           const SizedBox(width: 14),
-                          Icon(
-                            Icons.search_rounded,
-                            size: 18,
-                            color: theme.colorScheme.onSurface
-                                .withValues(alpha: 0.4),
-                          ),
+                          Icon(Icons.search_rounded,
+                              size: 18,
+                              color: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.4)),
                           const SizedBox(width: 10),
                           Expanded(
                             child: TextField(
                               controller: _searchController,
                               onChanged: (_) => _applyFilter(),
                               style: TextStyle(
-                                fontSize: 14,
-                                color: theme.colorScheme.onSurface,
-                              ),
+                                  fontSize: 14,
+                                  color: theme.colorScheme.onSurface),
                               decoration: InputDecoration(
                                 hintText: "Cari order...",
                                 hintStyle: TextStyle(
@@ -317,7 +291,6 @@ class _OrderPageState extends State<OrderPage>
                               ),
                             ),
                           ),
-                          // ✅ Clear button
                           if (_searchController.text.isNotEmpty)
                             GestureDetector(
                               onTap: () {
@@ -325,48 +298,49 @@ class _OrderPageState extends State<OrderPage>
                                 _applyFilter();
                               },
                               child: Padding(
-                                padding:
-                                    const EdgeInsets.only(right: 12),
-                                child: Icon(
-                                  Icons.close_rounded,
-                                  size: 16,
-                                  color: theme.colorScheme.onSurface
-                                      .withValues(alpha: 0.4),
-                                ),
+                                padding: const EdgeInsets.only(right: 12),
+                                child: Icon(Icons.close_rounded,
+                                    size: 16,
+                                    color: theme.colorScheme.onSurface
+                                        .withValues(alpha: 0.4)),
                               ),
                             ),
                         ],
                       ),
                     ),
 
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 12),
 
-                    // ─────────────────────────────
-                    // FILTER CHIPS
-                    // ─────────────────────────────
-                    Row(
-                      children: [
-                        _filterChip('all', 'Semua', null, theme, isDark),
-                        const SizedBox(width: 8),
-                        _filterChip('active', 'Aktif', Colors.green,
-                            theme, isDark),
-                        const SizedBox(width: 8),
-                        _filterChip('pending', 'Pending', Colors.orange,
-                            theme, isDark),
-                        const SizedBox(width: 8),
-                        _filterChip('expired', 'Expired', Colors.redAccent,
-                            theme, isDark),
-                      ],
+                    // ✅ Filter chips — SingleChildScrollView agar tidak overflow
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      child: Row(
+                        children: [
+                          _filterChip('all', 'Semua', null, theme, isDark),
+                          const SizedBox(width: 8),
+                          _filterChip('active', 'Aktif', Colors.green,
+                              theme, isDark),
+                          const SizedBox(width: 8),
+                          _filterChip('pending', 'Pending', Colors.orange,
+                              theme, isDark),
+                          const SizedBox(width: 8),
+                          _filterChip('expired', 'Expired', Colors.redAccent,
+                              theme, isDark),
+                          const SizedBox(width: 8),
+                          // ✅ Tab Rejected untuk user
+                          _filterChip('rejected', 'Ditolak',
+                              Colors.grey, theme, isDark),
+                        ],
+                      ),
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 14),
                   ],
                 ),
               ),
 
-              // ─────────────────────────────
-              // CONTENT
-              // ─────────────────────────────
+              // ── List content (scrollable)
               Expanded(
                 child: _isLoading
                     ? Center(
@@ -391,17 +365,15 @@ class _OrderPageState extends State<OrderPage>
                                         padding: const EdgeInsets.fromLTRB(
                                             24, 0, 24, 100),
                                         itemCount: _filteredOrders.length,
-                                        itemBuilder: (_, i) {
-                                          return PremiumOrderCard(
-                                            data: _filteredOrders[i],
-                                            onTap: () =>
-                                                Navigator.pushNamed(
-                                              context,
-                                              '/order-detail',
-                                              arguments: _filteredOrders[i],
-                                            ),
-                                          );
-                                        },
+                                        itemBuilder: (_, i) =>
+                                            PremiumOrderCard(
+                                          data: _filteredOrders[i],
+                                          onTap: () => Navigator.pushNamed(
+                                            context,
+                                            '/order-detail',
+                                            arguments: _filteredOrders[i],
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -413,9 +385,7 @@ class _OrderPageState extends State<OrderPage>
     );
   }
 
-  // ─────────────────────────────────────
-  // WIDGET HELPERS
-  // ─────────────────────────────────────
+  // ── Widget helpers ────────────────────────────────────────────────
 
   Widget _filterChip(
     String value,
@@ -435,7 +405,8 @@ class _OrderPageState extends State<OrderPage>
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        padding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           gradient: isSelected
@@ -484,19 +455,18 @@ class _OrderPageState extends State<OrderPage>
             if (count > 0 && !isSelected) ...[
               const SizedBox(width: 5),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 5, vertical: 1),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(6),
-                  color: (color ?? theme.colorScheme.primary)
-                      .withValues(alpha: 0.15),
+                  color: chipColor.withValues(alpha: 0.15),
                 ),
                 child: Text(
                   "$count",
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    color: color ?? theme.colorScheme.primary,
+                    color: chipColor,
                   ),
                 ),
               ),
@@ -520,30 +490,27 @@ class _OrderPageState extends State<OrderPage>
                 shape: BoxShape.circle,
                 color: theme.colorScheme.primary.withValues(alpha: 0.08),
               ),
-              child: Icon(
-                Icons.shopping_bag_outlined,
-                size: 40,
-                color: theme.colorScheme.primary.withValues(alpha: 0.5),
-              ),
+              child: Icon(Icons.shopping_bag_outlined,
+                  size: 40,
+                  color: theme.colorScheme.primary.withValues(alpha: 0.5)),
             ),
             const SizedBox(height: 16),
             Text(
               "Belum Ada Order",
               style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onSurface,
-              ),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface),
             ),
             const SizedBox(height: 6),
             Text(
               "Kamu belum melakukan pembelian.\nYuk beli produk premium sekarang!",
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 13,
-                height: 1.5,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.45),
-              ),
+                  fontSize: 13,
+                  height: 1.5,
+                  color:
+                      theme.colorScheme.onSurface.withValues(alpha: 0.45)),
             ),
             const SizedBox(height: 20),
             GestureDetector(
@@ -554,12 +521,10 @@ class _OrderPageState extends State<OrderPage>
                 decoration: BoxDecoration(
                   borderRadius:
                       BorderRadius.circular(AppConstants.radius),
-                  gradient: LinearGradient(
-                    colors: [
-                      theme.colorScheme.primary,
-                      theme.colorScheme.secondary,
-                    ],
-                  ),
+                  gradient: LinearGradient(colors: [
+                    theme.colorScheme.primary,
+                    theme.colorScheme.secondary,
+                  ]),
                   boxShadow: [
                     BoxShadow(
                       color: theme.colorScheme.primary
@@ -589,27 +554,24 @@ class _OrderPageState extends State<OrderPage>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.search_off_rounded,
-            size: 44,
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
-          ),
+          Icon(Icons.search_off_rounded,
+              size: 44,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.2)),
           const SizedBox(height: 12),
           Text(
             "Tidak ada hasil",
             style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
-            ),
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.4)),
           ),
           const SizedBox(height: 4),
           Text(
             "Coba ubah filter atau kata kunci",
             style: TextStyle(
-              fontSize: 12,
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
-            ),
+                fontSize: 12,
+                color:
+                    theme.colorScheme.onSurface.withValues(alpha: 0.3)),
           ),
         ],
       ),
@@ -636,20 +598,19 @@ class _OrderPageState extends State<OrderPage>
             Text(
               "Gagal Memuat Order",
               style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onSurface,
-              ),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface),
             ),
             const SizedBox(height: 6),
             Text(
               _errorMessage ?? "Terjadi kesalahan",
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 13,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                height: 1.5,
-              ),
+                  fontSize: 13,
+                  color:
+                      theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                  height: 1.5),
             ),
             const SizedBox(height: 20),
             GestureDetector(
@@ -660,12 +621,10 @@ class _OrderPageState extends State<OrderPage>
                 decoration: BoxDecoration(
                   borderRadius:
                       BorderRadius.circular(AppConstants.radius),
-                  gradient: LinearGradient(
-                    colors: [
-                      theme.colorScheme.primary,
-                      theme.colorScheme.secondary,
-                    ],
-                  ),
+                  gradient: LinearGradient(colors: [
+                    theme.colorScheme.primary,
+                    theme.colorScheme.secondary,
+                  ]),
                   boxShadow: [
                     BoxShadow(
                       color: theme.colorScheme.primary

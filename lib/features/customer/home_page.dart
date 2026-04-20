@@ -241,7 +241,7 @@ class _HomePageState extends State<HomePage>
         const SizedBox(width: 10),
 
         Text(
-          "INIARNN.APPREM",
+          "ARNN.APPREM",
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,

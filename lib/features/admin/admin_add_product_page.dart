@@ -129,10 +129,10 @@ class _AdminAddProductPageState extends State<AdminAddProductPage>
         'product_${DateTime.now().millisecondsSinceEpoch}.jpg';
     final bytes = await pickedFile!.readAsBytes();
     await supabase.storage
-        .from('product-images')
+        .from('netflix')
         .uploadBinary(fileName, bytes);
     return supabase.storage
-        .from('product-images')
+        .from('netflix')
         .getPublicUrl(fileName);
   }
 

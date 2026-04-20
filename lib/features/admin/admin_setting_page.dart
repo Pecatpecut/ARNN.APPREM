@@ -20,6 +20,10 @@ class _AdminSettingPageState extends State<AdminSettingPage>
   bool isLoading = true;
   bool _isLoggingOut = false;
 
+  int _totalProducts = 0;
+  int _totalOrders = 0;
+  int _totalUsers = 0;
+
 
   // ✅ Animasi konsisten dengan seluruh halaman
   late AnimationController _animController;
@@ -44,6 +48,7 @@ class _AdminSettingPageState extends State<AdminSettingPage>
       CurvedAnimation(parent: _animController, curve: Curves.easeOut),
     );
     _fetchUser();
+    _fetchStats(); 
   }
 
   @override
@@ -101,6 +106,21 @@ class _AdminSettingPageState extends State<AdminSettingPage>
       ),
     );
   }
+
+  Future<void> _fetchStats() async {
+  try {
+    final products = await supabase.from('products').select('id');
+    final orders = await supabase.from('orders').select('id');
+    final users = await supabase.from('users').select('id');
+
+    if (!mounted) return;
+    setState(() {
+      _totalProducts = products.length;
+      _totalOrders = orders.length;
+      _totalUsers = users.length;
+    });
+  } catch (_) {}
+  }  
 
   // ─────────────────────────────────
   // LOGOUT dengan konfirmasi dialog
@@ -559,11 +579,11 @@ class _AdminSettingPageState extends State<AdminSettingPage>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _statItem(theme, "Produk", "—", Icons.inventory_2_outlined),
+              _statItem(theme, "Produk", "$_totalProducts", Icons.inventory_2_outlined),
               _dividerV(theme),
-              _statItem(theme, "Pesanan", "—", Icons.receipt_long_outlined),
+              _statItem(theme, "Pesanan", "$_totalOrders", Icons.receipt_long_outlined),
               _dividerV(theme),
-              _statItem(theme, "Users", "—", Icons.people_outline_rounded),
+              _statItem(theme, "Users", "$_totalUsers", Icons.people_outline_rounded),
             ],
           ),
         ],

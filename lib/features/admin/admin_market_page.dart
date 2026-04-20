@@ -125,10 +125,7 @@ class _AdminMarketPageState extends State<AdminMarketPage>
                     position: _slideAnim,
                     child: SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 8,
-                      ),
+                      padding: const EdgeInsets.fromLTRB(24, 8, 24, 1000),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -212,7 +209,7 @@ class _AdminMarketPageState extends State<AdminMarketPage>
             ),
             const SizedBox(width: 10),
             Text(
-              "INIARNN.APPREM",
+              "ARNN.APPREM",
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -554,36 +551,7 @@ class _AdminMarketPageState extends State<AdminMarketPage>
 
                 Row(
                   children: [
-                    // ✅ Tombol edit cepat
-                    GestureDetector(
-                      onTap: () => Navigator.pushNamed(
-                        context,
-                        '/admin-edit-product',
-                        arguments: p,
-                      ),
-                      child: Container(
-                        width: 34,
-                        height: 34,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: isDark
-                              ? Colors.white.withValues(alpha: 0.07)
-                              : Colors.grey.shade100,
-                          border: Border.all(
-                            color: isDark
-                                ? Colors.white.withValues(alpha: 0.08)
-                                : Colors.black.withValues(alpha: 0.05),
-                          ),
-                        ),
-                        child: Icon(
-                          Icons.edit_outlined,
-                          size: 15,
-                          color: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.5),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
+
                     // ✅ Tombol detail — gradient button
                     Container(
                       padding: const EdgeInsets.symmetric(

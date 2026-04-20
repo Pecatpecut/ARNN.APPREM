@@ -195,7 +195,7 @@ class _LoginPageState extends State<LoginPage>
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                "INIARNN.APPREM",
+                                "ARNN.APPREM",
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
@@ -288,7 +288,7 @@ class _LoginPageState extends State<LoginPage>
 
                       // ── HEADING ──
                       Text(
-                        "iniarnn.apprem",
+                        "ARNN.APPREM",
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
